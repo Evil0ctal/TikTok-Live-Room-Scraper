@@ -27,6 +27,11 @@ config(theme='minty',
 
 
 def main():
+    put_markdown(f"## {title}")
+    put_markdown(f"### {description}")
+    put_markdown(f"#### 当前版本：{version}")
+
+    put_markdown('演示直播间链接：`https://www.tiktok.com/@alan.luck/live`')
     tiktok_live_url = input('请输入TikTok直播间链接：', type=TEXT, required=True)
 
     # 获取直播间信息
@@ -40,18 +45,29 @@ def main():
 
     room_ranking = TikTokLive.get_live_room_ranking(anchor_id, room_id)
 
+
+    put_markdown(f"## 解析结果（完整JSON）：")
+    put_code(room_ranking, language='json')
+
     room_ranking = room_ranking.get('data').get('rank_view')
 
-    print(f"数据采集完成，直播间ID：{room_id}，主播ID：{anchor_id}，排名：{room_ranking}")
-    put_markdown(f"## 解析结果：")
-    put_markdown(f"- 直播间ID：{room_id}")
+    put_markdown(f"## 解析结果（完整信息查看上面的JSON，下面只是输出一部分）：")
+    put_markdown(f"- 主播直播间ID：{room_id}")
     put_markdown(f"- 主播ID：{anchor_id}")
+    # $.data.rank_view.owner_rank.gap.gap_description.pieces.[0].string_value
+    put_markdown(f"- 直播间所有者钻石描述：{room_ranking.get('owner_rank').get('gap').get('gap_description').get('pieces')[0].get('string_value')}")
+    # $.data.rank_view.owner_rank.gap.gap_description.pieces.[1].string_value
+    put_markdown(f"- 直播间所有者钻石数量排名：{room_ranking.get('owner_rank').get('gap').get('gap_description').get('pieces')[1].get('string_value')}")
+    # $.data.rank_view.owner_rank.gap.gap_score
+    put_markdown(f"- 直播间所有者钻石数量：{room_ranking.get('owner_rank').get('gap').get('gap_score')}")
+
     # $.data.rank_view.owner_rank.rank_str
     put_markdown(f"- 直播间所有者排名：{room_ranking.get('owner_rank').get('rank_str')}")
 
     # $.data.rank_view.owner_rank.rank_user.nickname
     put_markdown(f"- 直播间所有者昵称：{room_ranking.get('owner_rank').get('rank_user').get('nickname')}")
 
+    put_markdown(f"----")
     # $.data.rank_view.ranks
     for rank in room_ranking.get('ranks'):
         # $.data.rank_view.ranks.[0].rank
@@ -64,7 +80,7 @@ def main():
         put_markdown(f"- 亲密度(钻石)：{rank.get('score')}")
         # $.data.rank_view.ranks.[0].score_description
         put_markdown(f"- 亲密度描述(钻石)：{rank.get('score_description')}")
-        put_markdown(f"---")
+        put_markdown(f"----")
 
 
 # Routes
